@@ -1,0 +1,306 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Hôte : 127.0.0.1
+-- Généré le : ven. 19 avr. 2024 à 07:26
+-- Version du serveur : 10.4.32-MariaDB
+-- Version de PHP : 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de données : `health_north`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `application_clinique`
+--
+
+CREATE TABLE `application_clinique` (
+  `IdClinique` int(6) NOT NULL,
+  `idPatient` int(6) NOT NULL COMMENT 'numéro de patient',
+  `idDossier` int(6) NOT NULL COMMENT 'dossier patient\r\n',
+  `idProfessionnelle` int(6) NOT NULL COMMENT 'Médecin',
+  `IdFacturation` int(6) NOT NULL COMMENT 'Factures',
+  `Planning` datetime NOT NULL,
+  `chambre` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `application_facturation`
+--
+
+CREATE TABLE `application_facturation` (
+  `IdFacturation` int(6) NOT NULL,
+  `idPatient` int(6) NOT NULL,
+  `idDossier` int(6) NOT NULL,
+  `Nom` varchar(25) NOT NULL,
+  `Prénom` varchar(25) NOT NULL,
+  `Type d'intervention` varchar(30) NOT NULL,
+  `Prix` int(6) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `application_mobile`
+--
+
+CREATE TABLE `application_mobile` (
+  `idAppmobile` int(6) NOT NULL,
+  `idDossier` int(6) NOT NULL COMMENT 'dossier patient',
+  `idPatient` int(6) NOT NULL,
+  `RDV` datetime NOT NULL,
+  `Options` text NOT NULL,
+  `Alarme médicament` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `application_web`
+--
+
+CREATE TABLE `application_web` (
+  `idAppweb` int(6) NOT NULL,
+  `idDossier` int(6) NOT NULL COMMENT 'Dossier patient',
+  `idPatient` int(6) NOT NULL,
+  `RDV` datetime NOT NULL,
+  `Ordonnance` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `dossier_patient`
+--
+
+CREATE TABLE `dossier_patient` (
+  `idDossier` int(6) NOT NULL,
+  `idPatient` int(6) NOT NULL,
+  `Nom` varchar(25) NOT NULL,
+  `Prénom` varchar(25) NOT NULL,
+  `Photo` blob NOT NULL,
+  `Numéro de sécurité sociale` int(15) NOT NULL,
+  `Email` varchar(25) NOT NULL,
+  `Tel` int(10) NOT NULL,
+  `Personne à contacter` int(10) NOT NULL,
+  `Médecin traitant` varchar(25) NOT NULL,
+  `RDV` datetime NOT NULL,
+  `Options` text NOT NULL,
+  `Ordonnances` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `patient`
+--
+
+CREATE TABLE `patient` (
+  `idPatient` int(6) NOT NULL,
+  `idDossier` int(6) NOT NULL COMMENT 'Dossier patient',
+  `idAppweb` int(6) NOT NULL,
+  `idAppmobile` int(6) NOT NULL,
+  `Nom` varchar(25) NOT NULL,
+  `Prénom` varchar(25) NOT NULL,
+  `Âge` int(3) NOT NULL,
+  `RDV` datetime NOT NULL,
+  `Chambre` varchar(10) NOT NULL,
+  `Type intervention` varchar(25) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `professionnelle_de_sante`
+--
+
+CREATE TABLE `professionnelle_de_sante` (
+  `idProfessionnelle` int(6) NOT NULL,
+  `idDossier` int(6) NOT NULL COMMENT 'Dossier patient',
+  `IdClinique` int(6) NOT NULL,
+  `Nom` varchar(25) NOT NULL,
+  `Prénom` varchar(25) NOT NULL,
+  `Spécialité` varchar(25) NOT NULL,
+  `RDV` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Index pour les tables déchargées
+--
+
+--
+-- Index pour la table `application_clinique`
+--
+ALTER TABLE `application_clinique`
+  ADD PRIMARY KEY (`IdClinique`),
+  ADD KEY `idPatient` (`idPatient`,`idDossier`,`idProfessionnelle`,`IdFacturation`),
+  ADD KEY `idDossier` (`idDossier`),
+  ADD KEY `IdFacturation` (`IdFacturation`),
+  ADD KEY `idProfessionnelle` (`idProfessionnelle`);
+
+--
+-- Index pour la table `application_facturation`
+--
+ALTER TABLE `application_facturation`
+  ADD PRIMARY KEY (`IdFacturation`),
+  ADD KEY `idPatient` (`idPatient`,`idDossier`),
+  ADD KEY `idDossier` (`idDossier`);
+
+--
+-- Index pour la table `application_mobile`
+--
+ALTER TABLE `application_mobile`
+  ADD PRIMARY KEY (`idAppmobile`),
+  ADD KEY `idDossier` (`idDossier`),
+  ADD KEY `idPatient` (`idPatient`);
+
+--
+-- Index pour la table `application_web`
+--
+ALTER TABLE `application_web`
+  ADD PRIMARY KEY (`idAppweb`),
+  ADD KEY `idDossier` (`idDossier`),
+  ADD KEY `idPatient` (`idPatient`);
+
+--
+-- Index pour la table `dossier_patient`
+--
+ALTER TABLE `dossier_patient`
+  ADD PRIMARY KEY (`idDossier`),
+  ADD KEY `idPatient` (`idPatient`);
+
+--
+-- Index pour la table `patient`
+--
+ALTER TABLE `patient`
+  ADD PRIMARY KEY (`idPatient`),
+  ADD KEY `idDossier` (`idDossier`),
+  ADD KEY `idAppweb` (`idAppweb`),
+  ADD KEY `idAppmobile` (`idAppmobile`);
+
+--
+-- Index pour la table `professionnelle_de_sante`
+--
+ALTER TABLE `professionnelle_de_sante`
+  ADD PRIMARY KEY (`idProfessionnelle`),
+  ADD KEY `idDossier` (`idDossier`),
+  ADD KEY `IdClinique` (`IdClinique`);
+
+--
+-- AUTO_INCREMENT pour les tables déchargées
+--
+
+--
+-- AUTO_INCREMENT pour la table `application_clinique`
+--
+ALTER TABLE `application_clinique`
+  MODIFY `IdClinique` int(6) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `application_facturation`
+--
+ALTER TABLE `application_facturation`
+  MODIFY `IdFacturation` int(6) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `application_mobile`
+--
+ALTER TABLE `application_mobile`
+  MODIFY `idAppmobile` int(6) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `application_web`
+--
+ALTER TABLE `application_web`
+  MODIFY `idAppweb` int(6) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `dossier_patient`
+--
+ALTER TABLE `dossier_patient`
+  MODIFY `idDossier` int(6) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `patient`
+--
+ALTER TABLE `patient`
+  MODIFY `idPatient` int(6) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `professionnelle_de_sante`
+--
+ALTER TABLE `professionnelle_de_sante`
+  MODIFY `idProfessionnelle` int(6) NOT NULL AUTO_INCREMENT;
+
+--
+-- Contraintes pour les tables déchargées
+--
+
+--
+-- Contraintes pour la table `application_clinique`
+--
+ALTER TABLE `application_clinique`
+  ADD CONSTRAINT `application_clinique_ibfk_1` FOREIGN KEY (`idPatient`) REFERENCES `patient` (`idPatient`),
+  ADD CONSTRAINT `application_clinique_ibfk_2` FOREIGN KEY (`idDossier`) REFERENCES `dossier_patient` (`idDossier`),
+  ADD CONSTRAINT `application_clinique_ibfk_3` FOREIGN KEY (`IdFacturation`) REFERENCES `application_facturation` (`IdFacturation`),
+  ADD CONSTRAINT `application_clinique_ibfk_4` FOREIGN KEY (`idProfessionnelle`) REFERENCES `professionnelle_de_sante` (`idProfessionnelle`);
+
+--
+-- Contraintes pour la table `application_facturation`
+--
+ALTER TABLE `application_facturation`
+  ADD CONSTRAINT `application_facturation_ibfk_1` FOREIGN KEY (`idPatient`) REFERENCES `patient` (`idPatient`),
+  ADD CONSTRAINT `application_facturation_ibfk_2` FOREIGN KEY (`idDossier`) REFERENCES `dossier_patient` (`idDossier`);
+
+--
+-- Contraintes pour la table `application_mobile`
+--
+ALTER TABLE `application_mobile`
+  ADD CONSTRAINT `application_mobile_ibfk_1` FOREIGN KEY (`idDossier`) REFERENCES `dossier_patient` (`idDossier`),
+  ADD CONSTRAINT `application_mobile_ibfk_2` FOREIGN KEY (`idPatient`) REFERENCES `patient` (`idPatient`);
+
+--
+-- Contraintes pour la table `application_web`
+--
+ALTER TABLE `application_web`
+  ADD CONSTRAINT `application_web_ibfk_1` FOREIGN KEY (`idDossier`) REFERENCES `dossier_patient` (`idDossier`),
+  ADD CONSTRAINT `application_web_ibfk_2` FOREIGN KEY (`idPatient`) REFERENCES `patient` (`idPatient`);
+
+--
+-- Contraintes pour la table `dossier_patient`
+--
+ALTER TABLE `dossier_patient`
+  ADD CONSTRAINT `dossier_patient_ibfk_1` FOREIGN KEY (`idPatient`) REFERENCES `patient` (`idPatient`);
+
+--
+-- Contraintes pour la table `patient`
+--
+ALTER TABLE `patient`
+  ADD CONSTRAINT `patient_ibfk_1` FOREIGN KEY (`idDossier`) REFERENCES `dossier_patient` (`idDossier`);
+
+--
+-- Contraintes pour la table `professionnelle_de_sante`
+--
+ALTER TABLE `professionnelle_de_sante`
+  ADD CONSTRAINT `professionnelle_de_sante_ibfk_1` FOREIGN KEY (`idDossier`) REFERENCES `dossier_patient` (`idDossier`),
+  ADD CONSTRAINT `professionnelle_de_sante_ibfk_2` FOREIGN KEY (`IdClinique`) REFERENCES `application_clinique` (`IdClinique`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
